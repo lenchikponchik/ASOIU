@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="FileTypeManager" version="17">
+    <extensionMap>
+      <mapping ext="cs" type="PLAIN_TEXT" />
+      <mapping ext="csproj" type="XML" />
+    </extensionMap>
+  </component>
+</project>
