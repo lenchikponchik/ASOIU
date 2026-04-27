@@ -121,8 +121,8 @@ public class Matrix<T>(int maxX, int maxY, IMatrixCheckEmpty<T> checkEmpty)
         get
         {
             CheckBounds(x, y);
-            return _matrix.TryGetValue((x, y), out T element)
-                ? element
+            return _matrix.TryGetValue((x, y), out T? element)
+                ? element!
                 : checkEmpty.GetEmptyElement();
         }
         set
@@ -294,7 +294,7 @@ class SimpleStack<T> : SimpleList<T> where T : IComparable
 
         if (Count == 0)
         {
-            return default!;
+            throw new InvalidOperationException("Стек пуст.");
         }
 
         if (Count == 1)

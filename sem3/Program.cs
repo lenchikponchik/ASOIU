@@ -24,21 +24,21 @@ void RunSqliteDemo()
     PrintData(DbFile, "dep");
     PrintData(DbFile, "dev");
 
-    List<string> names = Projection(DbFile, "dev", "dev_name");
+    List<string> names = ProjectionSql(DbFile, "dev", "dev_name");
     Console.WriteLine("\n=== Результат Projection(dev, dev_name) ===");
     foreach (string name in names)
     {
         Console.WriteLine(name);
     }
 
-    List<string[]> rows = Where(DbFile, "dev", "dep_id", "2");
+    List<string[]> rows = WhereSql(DbFile, "dev", "dep_id", "2");
     Console.WriteLine("\n=== Результат Where(dev, dep_id, 2) ===");
     foreach (string[] row in rows)
     {
         Console.WriteLine(string.Join(" | ", row));
     }
 
-    var (columns, joinRows) = Join(DbFile, "dev", "dep", "dep_id", "dep_id");
+    var (columns, joinRows) = JoinSql(DbFile, "dev", "dep", "dep_id", "dep_id");
     Console.WriteLine("\n=== Результат Join(dev, dep, dep_id, dep_id) ===");
     Console.WriteLine(string.Join(" | ", columns));
     Console.WriteLine(new string('-', 90));
@@ -47,7 +47,7 @@ void RunSqliteDemo()
         Console.WriteLine(string.Join(" | ", row));
     }
 
-    var (avgColumns, avgRows) = GroupAvg(DbFile, "dev", "dep_id", "dev_commits");
+    var (avgColumns, avgRows) = GroupAvgSql(DbFile, "dev", "dep_id", "dev_commits");
     Console.WriteLine("\n=== Результат GroupAvg(dev, dep_id, dev_commits) ===");
     Console.WriteLine(string.Join(" | ", avgColumns));
     Console.WriteLine(new string('-', 40));
@@ -226,7 +226,8 @@ static void PrintData(string dbPath, string tableName)
     connection.Open();
 
     var command = connection.CreateCommand();
-    command.CommandText = $"SELECT * FROM {tableName} ORDER BY 1;";
+    string table = QuoteIdentifier(tableName);
+    command.CommandText = $"SELECT * FROM {table} ORDER BY 1;";
 
     using var reader = command.ExecuteReader();
     const int columnWidth = 20;
@@ -251,7 +252,7 @@ static void PrintData(string dbPath, string tableName)
     }
 }
 
-static List<string> Projection(string dbPath, string tableName, string columnName)
+static List<string> ProjectionSql(string dbPath, string tableName, string columnName)
 {
     var result = new List<string>();
 
@@ -259,7 +260,9 @@ static List<string> Projection(string dbPath, string tableName, string columnNam
     connection.Open();
 
     var command = connection.CreateCommand();
-    command.CommandText = $"SELECT {columnName} FROM {tableName} ORDER BY 1;";
+    string table = QuoteIdentifier(tableName);
+    string column = QuoteIdentifier(columnName);
+    command.CommandText = $"SELECT {column} FROM {table} ORDER BY 1;";
 
     using var reader = command.ExecuteReader();
     while (reader.Read())
@@ -270,7 +273,7 @@ static List<string> Projection(string dbPath, string tableName, string columnNam
     return result;
 }
 
-static List<string[]> Where(string dbPath, string tableName, string columnName, string value)
+static List<string[]> WhereSql(string dbPath, string tableName, string columnName, string value)
 {
     var result = new List<string[]>();
 
@@ -278,7 +281,9 @@ static List<string[]> Where(string dbPath, string tableName, string columnName, 
     connection.Open();
 
     var command = connection.CreateCommand();
-    command.CommandText = $"SELECT * FROM {tableName} WHERE {columnName} = @value ORDER BY 1;";
+    string table = QuoteIdentifier(tableName);
+    string column = QuoteIdentifier(columnName);
+    command.CommandText = $"SELECT * FROM {table} WHERE {column} = @value ORDER BY 1;";
     command.Parameters.AddWithValue("@value", value);
 
     using var reader = command.ExecuteReader();
@@ -296,7 +301,7 @@ static List<string[]> Where(string dbPath, string tableName, string columnName, 
     return result;
 }
 
-static (string[] columns, List<string[]> rows) Join(
+static (string[] columns, List<string[]> rows) JoinSql(
     string dbPath,
     string table1,
     string table2,
@@ -308,12 +313,17 @@ static (string[] columns, List<string[]> rows) Join(
     using var connection = new SqliteConnection($"Data Source={dbPath}");
     connection.Open();
 
+    string table1Safe = QuoteIdentifier(table1);
+    string table2Safe = QuoteIdentifier(table2);
+    string key1Safe = QuoteIdentifier(key1);
+    string key2Safe = QuoteIdentifier(key2);
+
     var command = connection.CreateCommand();
     command.CommandText = $@"
 SELECT *
-FROM {table1}
-INNER JOIN {table2}
-    ON {table1}.{key1} = {table2}.{key2}
+FROM {table1Safe}
+INNER JOIN {table2Safe}
+    ON {table1Safe}.{key1Safe} = {table2Safe}.{key2Safe}
 ORDER BY 1;";
 
     using var reader = command.ExecuteReader();
@@ -338,7 +348,7 @@ ORDER BY 1;";
     return (columns, rows);
 }
 
-static (string[] columns, List<string[]> rows) GroupAvg(
+static (string[] columns, List<string[]> rows) GroupAvgSql(
     string dbPath,
     string tableName,
     string groupColumn,
@@ -349,11 +359,15 @@ static (string[] columns, List<string[]> rows) GroupAvg(
     using var connection = new SqliteConnection($"Data Source={dbPath}");
     connection.Open();
 
+    string table = QuoteIdentifier(tableName);
+    string groupBy = QuoteIdentifier(groupColumn);
+    string avgBy = QuoteIdentifier(avgColumn);
+
     var command = connection.CreateCommand();
     command.CommandText = $@"
-SELECT {groupColumn}, AVG({avgColumn}) AS avg_{avgColumn}
-FROM {tableName}
-GROUP BY {groupColumn}
+SELECT {groupBy}, AVG({avgBy}) AS avg_{avgColumn}
+FROM {table}
+GROUP BY {groupBy}
 ORDER BY 1;";
 
     using var reader = command.ExecuteReader();
@@ -423,6 +437,28 @@ static int FindColumnIndex(CsvTable table, string columnName)
     }
 
     return index;
+}
+
+static string QuoteIdentifier(string identifier)
+{
+    if (string.IsNullOrWhiteSpace(identifier))
+    {
+        throw new ArgumentException("Идентификатор не может быть пустым.");
+    }
+
+    foreach (char c in identifier)
+    {
+        bool isAllowed = (c >= 'a' && c <= 'z')
+                         || (c >= 'A' && c <= 'Z')
+                         || (c >= '0' && c <= '9')
+                         || c == '_';
+        if (!isAllowed)
+        {
+            throw new ArgumentException($"Недопустимый SQL-идентификатор: {identifier}");
+        }
+    }
+
+    return $"\"{identifier}\"";
 }
 
 static CsvTable Projection(CsvTable table, string columnName)

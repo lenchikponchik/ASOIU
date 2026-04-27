@@ -1,16 +1,16 @@
 using System.Globalization;
 
-const string DbFile = "restaurants.db";
-const string RestaurantsCsv = "restaurants.csv";
-const string DishesCsv = "menu_items.csv";
+const string DbFile = "cars.db";
+const string BrandsCsv = "car_brands.csv";
+const string CarsCsv = "cars.csv";
 
 var db = new DatabaseManager(DbFile);
 
-if (File.Exists(RestaurantsCsv) && File.Exists(DishesCsv))
+if (File.Exists(BrandsCsv) && File.Exists(CarsCsv))
 {
     if (db.IsDataEmpty())
     {
-        db.ImportFromCsv(RestaurantsCsv, DishesCsv);
+        db.ImportFromCsv(BrandsCsv, CarsCsv);
         Console.WriteLine("CSV-данные загружены в пустую базу.");
     }
     else
@@ -29,12 +29,12 @@ static void RunMainMenu(DatabaseManager db)
 {
     while (true)
     {
-        Console.WriteLine("=== ДЗ2: Рестораны и блюда ===");
-        Console.WriteLine("1. Показать рестораны");
-        Console.WriteLine("2. Показать блюда");
-        Console.WriteLine("3. Добавить блюдо");
-        Console.WriteLine("4. Изменить блюдо");
-        Console.WriteLine("5. Удалить блюдо");
+        Console.WriteLine("=== ДЗ2: Автомобильные марки и автомобили ===");
+        Console.WriteLine("1. Показать марки");
+        Console.WriteLine("2. Показать автомобили");
+        Console.WriteLine("3. Добавить автомобиль");
+        Console.WriteLine("4. Изменить автомобиль");
+        Console.WriteLine("5. Удалить автомобиль");
         Console.WriteLine("6. Отчеты");
         Console.WriteLine("0. Выход");
         Console.Write("Выберите пункт: ");
@@ -51,19 +51,19 @@ static void RunMainMenu(DatabaseManager db)
             switch (choice)
             {
                 case "1":
-                    PrintRestaurants(db);
+                    PrintBrands(db);
                     break;
                 case "2":
-                    PrintDishes(db);
+                    PrintCars(db);
                     break;
                 case "3":
-                    AddDish(db);
+                    AddCar(db);
                     break;
                 case "4":
-                    UpdateDish(db);
+                    UpdateCar(db);
                     break;
                 case "5":
-                    DeleteDish(db);
+                    DeleteCar(db);
                     break;
                 case "6":
                     RunReportsMenu(db);
@@ -82,101 +82,110 @@ static void RunMainMenu(DatabaseManager db)
     }
 }
 
-static void PrintRestaurants(DatabaseManager db)
+static void PrintBrands(DatabaseManager db)
 {
-    Console.WriteLine("=== Рестораны ===");
-    foreach (Restaurant restaurant in db.GetAllRestaurants())
+    Console.WriteLine("=== Автомобильные марки ===");
+    foreach (CarBrand brand in db.GetAllBrands())
     {
-        Console.WriteLine(restaurant);
+        Console.WriteLine(brand);
     }
 }
 
-static void PrintDishes(DatabaseManager db)
+static void PrintCars(DatabaseManager db)
 {
-    Console.WriteLine("=== Блюда ===");
-    foreach (MenuDish dish in db.GetAllDishes())
+    Console.WriteLine("=== Автомобили ===");
+    foreach (Car car in db.GetAllCars())
     {
-        Console.WriteLine(dish);
+        Console.WriteLine(car);
     }
 }
 
-static void AddDish(DatabaseManager db)
+static void AddCar(DatabaseManager db)
 {
-    Console.WriteLine("=== Добавление блюда ===");
-    PrintRestaurants(db);
+    Console.WriteLine("=== Добавление автомобиля ===");
+    PrintBrands(db);
 
-    int id = ReadRequiredInt("ID блюда: ");
-    int restaurantId = ReadRequiredInt("ID ресторана: ");
+    int id = ReadRequiredPositiveInt("ID автомобиля: ");
+    int brandId = ReadRequiredPositiveInt("ID марки: ");
+    string name = ReadRequiredText("Название модели: ");
+    int horsepower = ReadRequiredNonNegativeInt("Мощность (л.с.): ");
 
-    Console.Write("Название блюда: ");
-    string name = (Console.ReadLine() ?? "").Trim();
-
-    int price = ReadRequiredInt("Цена (руб): ");
-
-    db.AddDish(new MenuDish(id, restaurantId, name, price));
-    Console.WriteLine("Блюдо добавлено.");
+    db.AddCar(new Car(id, brandId, name, horsepower));
+    Console.WriteLine("Автомобиль добавлен.");
 }
 
-static void UpdateDish(DatabaseManager db)
+static void UpdateCar(DatabaseManager db)
 {
-    Console.WriteLine("=== Изменение блюда ===");
-    PrintDishes(db);
+    Console.WriteLine("=== Изменение автомобиля ===");
+    PrintCars(db);
 
-    int id = ReadRequiredInt("Введите ID блюда для изменения: ");
+    int id = ReadRequiredPositiveInt("Введите ID автомобиля для изменения: ");
 
-    MenuDish? dish = db.GetDishById(id);
-    if (dish is null)
+    Car? car = db.GetCarById(id);
+    if (car is null)
     {
-        Console.WriteLine("Блюдо не найдено.");
+        Console.WriteLine("Автомобиль не найден.");
         return;
     }
 
-    PrintRestaurants(db);
-    Console.Write($"ID ресторана [{dish.RestaurantId}]: ");
-    string? restaurantInput = Console.ReadLine();
-    if (!string.IsNullOrWhiteSpace(restaurantInput))
+    PrintBrands(db);
+    Console.Write($"ID марки [{car.BrandId}]: ");
+    string? brandInput = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(brandInput))
     {
-        if (!int.TryParse(restaurantInput, out int newRestaurantId))
+        if (!int.TryParse(brandInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out int newBrandId))
         {
-            Console.WriteLine("Некорректный ID ресторана.");
+            Console.WriteLine("Некорректный ID марки.");
             return;
         }
 
-        dish.RestaurantId = newRestaurantId;
+        if (newBrandId <= 0)
+        {
+            Console.WriteLine("ID марки должен быть больше нуля.");
+            return;
+        }
+
+        car.BrandId = newBrandId;
     }
 
-    Console.Write($"Название блюда [{dish.Name}]: ");
+    Console.Write($"Название модели [{car.Name}]: ");
     string? nameInput = Console.ReadLine();
     if (!string.IsNullOrWhiteSpace(nameInput))
     {
-        dish.Name = nameInput.Trim();
+        car.Name = nameInput.Trim();
     }
 
-    Console.Write($"Цена [{dish.Price}]: ");
-    string? priceInput = Console.ReadLine();
-    if (!string.IsNullOrWhiteSpace(priceInput))
+    Console.Write($"Мощность [{car.Horsepower}]: ");
+    string? horsepowerInput = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(horsepowerInput))
     {
-        if (!int.TryParse(priceInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out int newPrice))
+        if (!int.TryParse(horsepowerInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out int newHorsepower))
         {
-            Console.WriteLine("Некорректная цена.");
+            Console.WriteLine("Некорректная мощность.");
             return;
         }
 
-        dish.Price = newPrice;
+        if (newHorsepower < 0)
+        {
+            Console.WriteLine("Мощность не может быть отрицательной.");
+            return;
+        }
+
+        car.Horsepower = newHorsepower;
     }
 
-    db.UpdateDish(dish);
-    Console.WriteLine("Блюдо обновлено.");
+    bool updated = db.UpdateCar(car);
+    Console.WriteLine(updated ? "Автомобиль обновлен." : "Автомобиль не найден.");
 }
 
-static void DeleteDish(DatabaseManager db)
+static void DeleteCar(DatabaseManager db)
 {
-    Console.WriteLine("=== Удаление блюда ===");
-    PrintDishes(db);
+    Console.WriteLine("=== Удаление автомобиля ===");
+    PrintCars(db);
 
-    int id = ReadRequiredInt("Введите ID блюда для удаления: ");
-    db.DeleteDish(id);
-    Console.WriteLine("Блюдо удалено (если запись существовала).");
+    int id = ReadRequiredPositiveInt("Введите ID автомобиля для удаления: ");
+    bool deleted = db.DeleteCar(id);
+    Console.WriteLine(deleted ? "Автомобиль удален." : "Автомобиль не найден.");
 }
 
 static void RunReportsMenu(DatabaseManager db)
@@ -184,9 +193,9 @@ static void RunReportsMenu(DatabaseManager db)
     while (true)
     {
         Console.WriteLine("=== Отчеты ===");
-        Console.WriteLine("1. Полный список блюд с ресторанами");
-        Console.WriteLine("2. Количество блюд по ресторанам");
-        Console.WriteLine("3. Средняя цена блюд по ресторанам");
+        Console.WriteLine("1. Полный список автомобилей с марками");
+        Console.WriteLine("2. Количество автомобилей по маркам");
+        Console.WriteLine("3. Средняя мощность по маркам");
         Console.WriteLine("4. Сохранить отчет в файл (группа Б)");
         Console.WriteLine("0. Назад");
         Console.Write("Выберите пункт: ");
@@ -200,9 +209,9 @@ static void RunReportsMenu(DatabaseManager db)
 
         ReportBuilder? builder = choice switch
         {
-            "1" => BuildReportAllDishes(db),
-            "2" => BuildReportCountByRestaurant(db),
-            "3" => BuildReportAveragePriceByRestaurant(db),
+            "1" => BuildReportAllCars(db),
+            "2" => BuildReportCountByBrand(db),
+            "3" => BuildReportAverageHorsepowerByBrand(db),
             _ => null
         };
 
@@ -225,61 +234,61 @@ static void RunReportsMenu(DatabaseManager db)
     }
 }
 
-static ReportBuilder BuildReportAllDishes(DatabaseManager db)
+static ReportBuilder BuildReportAllCars(DatabaseManager db)
 {
     return new ReportBuilder(db)
         .Query(@"
-SELECT d.dish_name, r.rest_name, d.price
-FROM dish d
-JOIN restaurant r ON d.rest_id = r.rest_id
-ORDER BY d.dish_name;")
-        .Title("Список блюд по ресторанам")
-        .Header("Блюдо", "Ресторан", "Цена")
-        .ColumnWidths(28, 24, 10);
+SELECT c.car_name, b.brand_name, c.horsepower
+FROM car c
+JOIN car_brand b ON c.brand_id = b.brand_id
+ORDER BY c.car_name;")
+        .Title("Список автомобилей по маркам")
+        .Header("Автомобиль", "Марка", "Мощность (л.с.)")
+        .ColumnWidths(24, 18, 15);
 }
 
-static ReportBuilder BuildReportCountByRestaurant(DatabaseManager db)
+static ReportBuilder BuildReportCountByBrand(DatabaseManager db)
 {
     return new ReportBuilder(db)
         .Query(@"
-SELECT r.rest_name, COUNT(*) AS dish_count
-FROM dish d
-JOIN restaurant r ON d.rest_id = r.rest_id
-GROUP BY r.rest_name
-ORDER BY dish_count DESC, r.rest_name;")
-        .Title("Количество блюд по ресторанам")
-        .Header("Ресторан", "Количество")
-        .ColumnWidths(24, 12);
+SELECT b.brand_name, COUNT(*) AS car_count
+FROM car c
+JOIN car_brand b ON c.brand_id = b.brand_id
+GROUP BY b.brand_name
+ORDER BY car_count DESC, b.brand_name;")
+        .Title("Количество автомобилей по маркам")
+        .Header("Марка", "Количество")
+        .ColumnWidths(18, 12);
 }
 
-static ReportBuilder BuildReportAveragePriceByRestaurant(DatabaseManager db)
+static ReportBuilder BuildReportAverageHorsepowerByBrand(DatabaseManager db)
 {
     return new ReportBuilder(db)
         .Query(@"
-SELECT r.rest_name, ROUND(AVG(d.price), 2) AS avg_price
-FROM dish d
-JOIN restaurant r ON d.rest_id = r.rest_id
-GROUP BY r.rest_name
-ORDER BY avg_price DESC, r.rest_name;")
-        .Title("Средняя цена блюд по ресторанам")
-        .Header("Ресторан", "Средняя цена")
-        .ColumnWidths(24, 14);
+SELECT b.brand_name, ROUND(AVG(c.horsepower), 2) AS avg_hp
+FROM car c
+JOIN car_brand b ON c.brand_id = b.brand_id
+GROUP BY b.brand_name
+ORDER BY avg_hp DESC, b.brand_name;")
+        .Title("Средняя мощность по маркам")
+        .Header("Марка", "Средняя мощность")
+        .ColumnWidths(18, 18);
 }
 
 static void SaveReportToFile(DatabaseManager db)
 {
     Console.WriteLine("Какой отчет сохранить?");
-    Console.WriteLine("1. Полный список блюд с ресторанами");
-    Console.WriteLine("2. Количество блюд по ресторанам");
-    Console.WriteLine("3. Средняя цена блюд по ресторанам");
+    Console.WriteLine("1. Полный список автомобилей с марками");
+    Console.WriteLine("2. Количество автомобилей по маркам");
+    Console.WriteLine("3. Средняя мощность по маркам");
     Console.Write("Номер отчета: ");
     string? reportChoice = Console.ReadLine();
 
     ReportBuilder? builder = reportChoice switch
     {
-        "1" => BuildReportAllDishes(db),
-        "2" => BuildReportCountByRestaurant(db),
-        "3" => BuildReportAveragePriceByRestaurant(db),
+        "1" => BuildReportAllCars(db),
+        "2" => BuildReportCountByBrand(db),
+        "3" => BuildReportAverageHorsepowerByBrand(db),
         _ => null
     };
 
@@ -314,5 +323,48 @@ static int ReadRequiredInt(string prompt)
         }
 
         Console.WriteLine("Ошибка: введите целое число.");
+    }
+}
+
+static int ReadRequiredPositiveInt(string prompt)
+{
+    while (true)
+    {
+        int value = ReadRequiredInt(prompt);
+        if (value > 0)
+        {
+            return value;
+        }
+
+        Console.WriteLine("Ошибка: введите целое число больше нуля.");
+    }
+}
+
+static int ReadRequiredNonNegativeInt(string prompt)
+{
+    while (true)
+    {
+        int value = ReadRequiredInt(prompt);
+        if (value >= 0)
+        {
+            return value;
+        }
+
+        Console.WriteLine("Ошибка: введите целое число не меньше нуля.");
+    }
+}
+
+static string ReadRequiredText(string prompt)
+{
+    while (true)
+    {
+        Console.Write(prompt);
+        string value = (Console.ReadLine() ?? "").Trim();
+        if (value.Length > 0)
+        {
+            return value;
+        }
+
+        Console.WriteLine("Ошибка: строка не должна быть пустой.");
     }
 }

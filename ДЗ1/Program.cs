@@ -1,6 +1,4 @@
-﻿using System;
-
-class Program
+﻿class Program
 {
     static int Distance(string s1, string s2)
     {
@@ -60,13 +58,13 @@ class Program
         while (true)
         {
             Console.Write("Введите первую строку: ");
-            string a = Console.ReadLine();
+            string a = Console.ReadLine() ?? "";
 
             if (a == "exit")
                 break;
 
             Console.Write("Введите вторую строку: ");
-            string b = Console.ReadLine();
+            string b = Console.ReadLine() ?? "";
 
             int result = Distance(a, b);
 

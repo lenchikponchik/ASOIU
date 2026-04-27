@@ -2,14 +2,15 @@ using System.Globalization;
 using Microsoft.Data.Sqlite;
 
 /// <summary>
-/// Инкапсулирует работу с SQLite для справочника ресторанов и таблицы блюд.
+/// Управление базой данных SQLite для марок автомобилей и автомобилей.
+/// Инкапсулирует создание таблиц, импорт CSV, CRUD и выполнение SQL-запросов.
 /// </summary>
 public class DatabaseManager
 {
     private readonly string _connectionString;
 
     /// <summary>
-    /// Конструктор. Создает файл БД и таблицы, если они отсутствуют.
+    /// Конструктор. Принимает путь к файлу БД, создает таблицы при необходимости.
     /// </summary>
     public DatabaseManager(string dbPath)
     {
@@ -18,24 +19,22 @@ public class DatabaseManager
     }
 
     /// <summary>
-    /// Импортирует данные из CSV-файлов в таблицы restaurant и dish.
+    /// Импортирует данные из CSV-файлов в таблицы car_brand и car.
     /// </summary>
-    public void ImportFromCsv(string restaurantsCsvPath, string dishesCsvPath)
+    public void ImportFromCsv(string brandsCsvPath, string carsCsvPath)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
+        using var connection = CreateOpenConnection();
         using var transaction = connection.BeginTransaction();
 
         var clearCommand = connection.CreateCommand();
         clearCommand.Transaction = transaction;
-        clearCommand.CommandText = "DELETE FROM dish; DELETE FROM restaurant;";
+        clearCommand.CommandText = "DELETE FROM car; DELETE FROM car_brand;";
         clearCommand.ExecuteNonQuery();
 
-        string[] restaurantLines = File.ReadAllLines(restaurantsCsvPath);
-        for (int i = 1; i < restaurantLines.Length; i++)
+        string[] brandLines = File.ReadAllLines(brandsCsvPath);
+        for (int i = 1; i < brandLines.Length; i++)
         {
-            string line = restaurantLines[i];
+            string line = brandLines[i];
             if (string.IsNullOrWhiteSpace(line))
             {
                 continue;
@@ -47,20 +46,20 @@ public class DatabaseManager
                 continue;
             }
 
-            var insertRestaurant = connection.CreateCommand();
-            insertRestaurant.Transaction = transaction;
-            insertRestaurant.CommandText = @"
-INSERT INTO restaurant (rest_id, rest_name)
+            var insertBrand = connection.CreateCommand();
+            insertBrand.Transaction = transaction;
+            insertBrand.CommandText = @"
+INSERT INTO car_brand (brand_id, brand_name)
 VALUES (@id, @name);";
-            insertRestaurant.Parameters.AddWithValue("@id", int.Parse(parts[0], CultureInfo.InvariantCulture));
-            insertRestaurant.Parameters.AddWithValue("@name", parts[1]);
-            insertRestaurant.ExecuteNonQuery();
+            insertBrand.Parameters.AddWithValue("@id", int.Parse(parts[0], CultureInfo.InvariantCulture));
+            insertBrand.Parameters.AddWithValue("@name", parts[1]);
+            insertBrand.ExecuteNonQuery();
         }
 
-        string[] dishLines = File.ReadAllLines(dishesCsvPath);
-        for (int i = 1; i < dishLines.Length; i++)
+        string[] carLines = File.ReadAllLines(carsCsvPath);
+        for (int i = 1; i < carLines.Length; i++)
         {
-            string line = dishLines[i];
+            string line = carLines[i];
             if (string.IsNullOrWhiteSpace(line))
             {
                 continue;
@@ -72,62 +71,56 @@ VALUES (@id, @name);";
                 continue;
             }
 
-            var insertDish = connection.CreateCommand();
-            insertDish.Transaction = transaction;
-            insertDish.CommandText = @"
-INSERT INTO dish (dish_id, rest_id, dish_name, price)
-VALUES (@id, @restId, @name, @price);";
-            insertDish.Parameters.AddWithValue("@id", int.Parse(parts[0], CultureInfo.InvariantCulture));
-            insertDish.Parameters.AddWithValue("@restId", int.Parse(parts[1], CultureInfo.InvariantCulture));
-            insertDish.Parameters.AddWithValue("@name", parts[2]);
-            insertDish.Parameters.AddWithValue("@price", int.Parse(parts[3], CultureInfo.InvariantCulture));
-            insertDish.ExecuteNonQuery();
+            var insertCar = connection.CreateCommand();
+            insertCar.Transaction = transaction;
+            insertCar.CommandText = @"
+INSERT INTO car (car_id, brand_id, car_name, horsepower)
+VALUES (@id, @brandId, @name, @horsepower);";
+            insertCar.Parameters.AddWithValue("@id", int.Parse(parts[0], CultureInfo.InvariantCulture));
+            insertCar.Parameters.AddWithValue("@brandId", int.Parse(parts[1], CultureInfo.InvariantCulture));
+            insertCar.Parameters.AddWithValue("@name", parts[2]);
+            insertCar.Parameters.AddWithValue("@horsepower", int.Parse(parts[3], CultureInfo.InvariantCulture));
+            insertCar.ExecuteNonQuery();
         }
 
         transaction.Commit();
     }
 
     /// <summary>
-    /// Возвращает все рестораны.
+    /// Возвращает список всех марок.
     /// </summary>
-    public List<Restaurant> GetAllRestaurants()
+    public List<CarBrand> GetAllBrands()
     {
-        var result = new List<Restaurant>();
-
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        var result = new List<CarBrand>();
+        using var connection = CreateOpenConnection();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT rest_id, rest_name FROM restaurant ORDER BY rest_id;";
+        command.CommandText = "SELECT brand_id, brand_name FROM car_brand ORDER BY brand_id;";
 
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            result.Add(new Restaurant(
-                reader.GetInt32(0),
-                reader.GetString(1)));
+            result.Add(new CarBrand(reader.GetInt32(0), reader.GetString(1)));
         }
 
         return result;
     }
 
     /// <summary>
-    /// Возвращает все блюда.
+    /// Возвращает список всех автомобилей.
     /// </summary>
-    public List<MenuDish> GetAllDishes()
+    public List<Car> GetAllCars()
     {
-        var result = new List<MenuDish>();
-
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        var result = new List<Car>();
+        using var connection = CreateOpenConnection();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT dish_id, rest_id, dish_name, price FROM dish ORDER BY dish_id;";
+        command.CommandText = "SELECT car_id, brand_id, car_name, horsepower FROM car ORDER BY car_id;";
 
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            result.Add(new MenuDish(
+            result.Add(new Car(
                 reader.GetInt32(0),
                 reader.GetInt32(1),
                 reader.GetString(2),
@@ -138,19 +131,18 @@ VALUES (@id, @restId, @name, @price);";
     }
 
     /// <summary>
-    /// Возвращает блюдо по идентификатору или null, если запись не найдена.
+    /// Возвращает автомобиль по идентификатору или null, если запись не найдена.
     /// </summary>
-    public MenuDish? GetDishById(int dishId)
+    public Car? GetCarById(int carId)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-SELECT dish_id, rest_id, dish_name, price
-FROM dish
-WHERE dish_id = @id;";
-        command.Parameters.AddWithValue("@id", dishId);
+SELECT car_id, brand_id, car_name, horsepower
+FROM car
+WHERE car_id = @id;";
+        command.Parameters.AddWithValue("@id", carId);
 
         using var reader = command.ExecuteReader();
         if (!reader.Read())
@@ -158,7 +150,7 @@ WHERE dish_id = @id;";
             return null;
         }
 
-        return new MenuDish(
+        return new Car(
             reader.GetInt32(0),
             reader.GetInt32(1),
             reader.GetString(2),
@@ -166,67 +158,73 @@ WHERE dish_id = @id;";
     }
 
     /// <summary>
-    /// Добавляет новое блюдо.
+    /// Добавляет новый автомобиль.
     /// </summary>
-    public void AddDish(MenuDish dish)
+    public void AddCar(Car car)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
+
+        if (!BrandExists(connection, car.BrandId))
+        {
+            throw new InvalidOperationException($"Марка с ID={car.BrandId} не найдена.");
+        }
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-INSERT INTO dish (dish_id, rest_id, dish_name, price)
-VALUES (@id, @restId, @name, @price);";
-        command.Parameters.AddWithValue("@id", dish.Id);
-        command.Parameters.AddWithValue("@restId", dish.RestaurantId);
-        command.Parameters.AddWithValue("@name", dish.Name);
-        command.Parameters.AddWithValue("@price", dish.Price);
+INSERT INTO car (car_id, brand_id, car_name, horsepower)
+VALUES (@id, @brandId, @name, @horsepower);";
+        command.Parameters.AddWithValue("@id", car.Id);
+        command.Parameters.AddWithValue("@brandId", car.BrandId);
+        command.Parameters.AddWithValue("@name", car.Name);
+        command.Parameters.AddWithValue("@horsepower", car.Horsepower);
         command.ExecuteNonQuery();
     }
 
     /// <summary>
-    /// Обновляет блюдо по идентификатору.
+    /// Обновляет автомобиль по идентификатору.
     /// </summary>
-    public void UpdateDish(MenuDish dish)
+    public bool UpdateCar(Car car)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
+
+        if (!BrandExists(connection, car.BrandId))
+        {
+            throw new InvalidOperationException($"Марка с ID={car.BrandId} не найдена.");
+        }
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-UPDATE dish
-SET rest_id = @restId,
-    dish_name = @name,
-    price = @price
-WHERE dish_id = @id;";
-        command.Parameters.AddWithValue("@id", dish.Id);
-        command.Parameters.AddWithValue("@restId", dish.RestaurantId);
-        command.Parameters.AddWithValue("@name", dish.Name);
-        command.Parameters.AddWithValue("@price", dish.Price);
-        command.ExecuteNonQuery();
+UPDATE car
+SET brand_id = @brandId,
+    car_name = @name,
+    horsepower = @horsepower
+WHERE car_id = @id;";
+        command.Parameters.AddWithValue("@id", car.Id);
+        command.Parameters.AddWithValue("@brandId", car.BrandId);
+        command.Parameters.AddWithValue("@name", car.Name);
+        command.Parameters.AddWithValue("@horsepower", car.Horsepower);
+        return command.ExecuteNonQuery() > 0;
     }
 
     /// <summary>
-    /// Удаляет блюдо по идентификатору.
+    /// Удаляет автомобиль по идентификатору.
     /// </summary>
-    public void DeleteDish(int dishId)
+    public bool DeleteCar(int carId)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
 
         var command = connection.CreateCommand();
-        command.CommandText = "DELETE FROM dish WHERE dish_id = @id;";
-        command.Parameters.AddWithValue("@id", dishId);
-        command.ExecuteNonQuery();
+        command.CommandText = "DELETE FROM car WHERE car_id = @id;";
+        command.Parameters.AddWithValue("@id", carId);
+        return command.ExecuteNonQuery() > 0;
     }
 
     /// <summary>
-    /// Выполняет произвольный SQL-запрос для формирования отчётов.
+    /// Выполняет произвольный SQL-запрос для формирования отчетов.
     /// </summary>
     public QueryResult ExecuteQuery(string sql)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText = sql;
@@ -255,44 +253,62 @@ WHERE dish_id = @id;";
     }
 
     /// <summary>
-    /// Проверяет, что таблицы restaurant и dish пока не содержат данных.
+    /// Проверяет, что таблицы car_brand и car пока не содержат данных.
     /// </summary>
     public bool IsDataEmpty()
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
 
-        var restaurantCommand = connection.CreateCommand();
-        restaurantCommand.CommandText = "SELECT COUNT(*) FROM restaurant;";
-        long restaurantCount = (long)(restaurantCommand.ExecuteScalar() ?? 0L);
+        var brandCommand = connection.CreateCommand();
+        brandCommand.CommandText = "SELECT COUNT(*) FROM car_brand;";
+        long brandCount = (long)(brandCommand.ExecuteScalar() ?? 0L);
 
-        var dishCommand = connection.CreateCommand();
-        dishCommand.CommandText = "SELECT COUNT(*) FROM dish;";
-        long dishCount = (long)(dishCommand.ExecuteScalar() ?? 0L);
+        var carCommand = connection.CreateCommand();
+        carCommand.CommandText = "SELECT COUNT(*) FROM car;";
+        long carCount = (long)(carCommand.ExecuteScalar() ?? 0L);
 
-        return restaurantCount == 0 && dishCount == 0;
+        return brandCount == 0 && carCount == 0;
     }
 
     private void EnsureDatabase()
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        using var connection = CreateOpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-CREATE TABLE IF NOT EXISTS restaurant (
-    rest_id   INTEGER PRIMARY KEY,
-    rest_name TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS car_brand (
+    brand_id   INTEGER PRIMARY KEY,
+    brand_name TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS dish (
-    dish_id   INTEGER PRIMARY KEY,
-    rest_id   INTEGER NOT NULL,
-    dish_name TEXT NOT NULL,
-    price     INTEGER NOT NULL CHECK (price >= 0),
-    FOREIGN KEY (rest_id) REFERENCES restaurant(rest_id)
+CREATE TABLE IF NOT EXISTS car (
+    car_id      INTEGER PRIMARY KEY,
+    brand_id    INTEGER NOT NULL,
+    car_name    TEXT NOT NULL,
+    horsepower  INTEGER NOT NULL CHECK (horsepower >= 0),
+    FOREIGN KEY (brand_id) REFERENCES car_brand(brand_id)
 );";
         command.ExecuteNonQuery();
+    }
+
+    private SqliteConnection CreateOpenConnection()
+    {
+        var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var pragma = connection.CreateCommand();
+        pragma.CommandText = "PRAGMA foreign_keys = ON;";
+        pragma.ExecuteNonQuery();
+
+        return connection;
+    }
+
+    private static bool BrandExists(SqliteConnection connection, int brandId)
+    {
+        var command = connection.CreateCommand();
+        command.CommandText = "SELECT 1 FROM car_brand WHERE brand_id = @id LIMIT 1;";
+        command.Parameters.AddWithValue("@id", brandId);
+        return command.ExecuteScalar() is not null;
     }
 }
 

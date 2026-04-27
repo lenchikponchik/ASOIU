@@ -8,9 +8,8 @@ class Program
         Console.WriteLine("=== АНАЛИЗ КВАЛИФИКАЦИИ ГРАН-ПРИ ===");
         Console.WriteLine();
 
-        Console.Write("Введите количество участников: ");
-        int n = int.Parse(Console.ReadLine() ?? "");
-        Console.WriteLine();8
+        int n = ReadPositiveInt("Введите количество участников: ");
+        Console.WriteLine();
 
         string[] teams = new string[n];
         double[] avgSpeeds = new double[n];
@@ -175,8 +174,31 @@ class Program
 
     static double ReadDouble()
     {
-        string input = Console.ReadLine() ?? "";
-        input = input.Replace(',', '.');
-        return double.Parse(input, CultureInfo.InvariantCulture);
+        while (true)
+        {
+            string input = Console.ReadLine() ?? "";
+            input = input.Replace(',', '.');
+            if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
+            {
+                return value;
+            }
+
+            Console.Write("Ошибка: введите число. Повторите ввод: ");
+        }
+    }
+
+    static int ReadPositiveInt(string prompt)
+    {
+        while (true)
+        {
+            Console.Write(prompt);
+            string input = Console.ReadLine() ?? "";
+            if (int.TryParse(input, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0)
+            {
+                return value;
+            }
+
+            Console.WriteLine("Ошибка: введите целое число больше нуля.");
+        }
     }
 }

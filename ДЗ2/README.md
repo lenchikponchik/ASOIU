@@ -1,16 +1,19 @@
-# ДЗ2 (вариант 22)
+# ДЗ2 (вариант 3)
 
 Предметная область:
-- Справочник: `restaurant(rest_id, rest_name)`
-- Основная таблица: `dish(dish_id, rest_id, dish_name, price)`
+- Справочник: `car_brand(brand_id, brand_name)`
+- Основная таблица: `car(car_id, brand_id, car_name, horsepower)`
 
 Реализовано:
-- классы-модели `Restaurant` и `MenuDish` (свойства, конструкторы, `ToString()`, XML-комментарии);
+- классы-модели `CarBrand` и `Car` (properties, конструкторы, `ToString()`, XML-комментарии);
 - `DatabaseManager` (создание БД, импорт CSV, CRUD для основной таблицы, выполнение SQL для отчетов);
 - консольное меню (просмотр, добавление, редактирование, удаление, отчеты);
 - `ReportBuilder` (Fluent Interface: `Query`, `Title`, `Header`, `ColumnWidths`, `Build`, `Print`);
-- доп. задание группы `Б`: терминальный метод `SaveToFile(string path)`.
+- дополнительное задание группы Б: терминальный метод `SaveToFile(string path)`.
 
 CSV-файлы:
-- `restaurants.csv` (4 записи);
-- `menu_items.csv` (12 записей).
+- `car_brands.csv` (4 записи);
+- `cars.csv` (12 записей).
+
+Дополнительно:
+- `diagrams.puml` содержит Chen ER Diagram, IE ER Diagram и Activity Diagram для цепочки `ReportBuilder`.

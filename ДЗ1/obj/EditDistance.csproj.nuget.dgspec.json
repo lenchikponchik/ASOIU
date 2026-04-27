@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/cry/Рабочий стол/ASOIU/ДЗ1/EditDistance.csproj": {}
+    "/home/cry/ASOIU/ДЗ1/EditDistance.csproj": {}
   },
   "projects": {
-    "/home/cry/Рабочий стол/ASOIU/ДЗ1/EditDistance.csproj": {
+    "/home/cry/ASOIU/ДЗ1/EditDistance.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/cry/Рабочий стол/ASOIU/ДЗ1/EditDistance.csproj",
+        "projectUniqueName": "/home/cry/ASOIU/ДЗ1/EditDistance.csproj",
         "projectName": "EditDistance",
-        "projectPath": "/home/cry/Рабочий стол/ASOIU/ДЗ1/EditDistance.csproj",
+        "projectPath": "/home/cry/ASOIU/ДЗ1/EditDistance.csproj",
         "packagesPath": "/home/cry/.nuget/packages/",
-        "outputPath": "/home/cry/Рабочий стол/ASOIU/ДЗ1/obj/",
+        "outputPath": "/home/cry/ASOIU/ДЗ1/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/cry/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net8.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -32,11 +32,17 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "imports": [
             "net461",
             "net462",
@@ -51,15 +57,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.8, 6.0.8]"
+              "version": "[8.0.25, 8.0.25]"
             },
             {
               "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[6.0.8, 6.0.8]"
+              "version": "[8.0.25, 8.0.25]"
             },
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.8, 6.0.8]"
+              "version": "[8.0.25, 8.0.25]"
             }
           ],
           "frameworkReferences": {
@@ -67,7 +73,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.400/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/home/cry/.dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
