@@ -1,0 +1,116 @@
+// Концептуальная карта: Архитектура программных систем
+// Антонов Леонид, ИУ5-22Б
+// Визуализация: graphviz.online или dot -Tpng concept_map.dot -o concept_map.png
+
+digraph ConceptMap {
+    rankdir=LR;
+    node [shape=box, style="rounded,filled", fillcolor=lightyellow, fontname="Arial", fontsize=11];
+    edge [fontname="Arial", fontsize=9];
+
+    // Центральный узел
+    ARCH [label="Архитектура\nпрограммных систем", fillcolor=lightblue, style="rounded,filled,bold"];
+
+    // === ПРИНЦИПЫ ===
+    subgraph cluster_principles {
+        label="Принципы проектирования";
+        style=dotted;
+        SOLID [label="SOLID", fillcolor=lightyellow];
+        SRP   [label="SRP\n(одна ответственность)"];
+        OCP   [label="OCP\n(открыт/закрыт)"];
+        LSP   [label="LSP\n(подстановка)"];
+        ISP   [label="ISP\n(разделение интерфейсов)"];
+        DIP   [label="DIP\n(инверсия зависимостей)"];
+        DRY   [label="DRY"];
+        KISS  [label="KISS"];
+        YAGNI [label="YAGNI"];
+        SOLID -> SRP; SOLID -> OCP; SOLID -> LSP; SOLID -> ISP; SOLID -> DIP;
+    }
+
+    // === DI ===
+    subgraph cluster_di {
+        label="Внедрение зависимостей (DI)";
+        style=dotted;
+        DI     [label="DI", fillcolor=lightyellow];
+        CTOR   [label="Конструктор\n(предпочтительно)"];
+        PROP   [label="Свойство\n(необязательно)"];
+        METHOD [label="Метод параметра"];
+        PUREDI [label="Pure DI\n(точка сборки)"];
+        CONT   [label="DI-контейнер\n(MS.Extensions.DI)"];
+        SING   [label="Singleton"];
+        TRANS  [label="Transient"];
+        SCOPED [label="Scoped"];
+        DI -> CTOR; DI -> PROP; DI -> METHOD;
+        DI -> PUREDI; DI -> CONT;
+        CONT -> SING; CONT -> TRANS; CONT -> SCOPED;
+    }
+
+    // === ПАТТЕРНЫ ===
+    subgraph cluster_patterns {
+        label="Паттерны проектирования";
+        style=dotted;
+        STRATEGY  [label="Стратегия (Strategy)"];
+        IFINE     [label="IFineRule\n(интерфейс)"];
+        CALCCTX   [label="FineCalculator\n(контекст)"];
+        RULES     [label="Regular / Student /\nSenior / Staff / Family"];
+        STRATEGY -> IFINE; STRATEGY -> CALCCTX; IFINE -> RULES;
+        CALCCTX -> IFINE [label="использует"];
+    }
+
+    // === ТЕСТИРОВАНИЕ ===
+    subgraph cluster_testing {
+        label="Тестирование";
+        style=dotted;
+        TEST  [label="Тестирование", fillcolor=lightyellow];
+        XUNIT [label="xUnit\n([Fact]/[Theory])"];
+        MOQ   [label="Moq (Mock)"];
+        STUB  [label="Stub / Dummy"];
+        AAA   [label="AAA\n(Arrange/Act/Assert)"];
+        TDD   [label="TDD"];
+        TEST -> XUNIT; TEST -> MOQ; TEST -> STUB; TEST -> AAA; TEST -> TDD;
+    }
+
+    // === РЕФАКТОРИНГ ===
+    subgraph cluster_refactor {
+        label="Рефакторинг";
+        style=dotted;
+        REFACTOR [label="Рефакторинг", fillcolor=lightyellow];
+        RENAME   [label="Переименование"];
+        EXTRACT  [label="Выделение метода/класса"];
+        EARLYRET [label="Ранний return"];
+        CONSTS   [label="Замена магических\nчисел константами"];
+        REFACTOR -> RENAME; REFACTOR -> EXTRACT; REFACTOR -> EARLYRET; REFACTOR -> CONSTS;
+    }
+
+    // === EF CORE ===
+    subgraph cluster_ef {
+        label="ORM / EF Core";
+        style=dotted;
+        EF       [label="EF Core (Code First)", fillcolor=lightyellow];
+        DBCTX    [label="DbContext"];
+        LINQ     [label="LINQ\n(Include / GroupBy / OrderBy)"];
+        SQLITE   [label="SQLite"];
+        WINFORMS [label="WinForms GUI"];
+        EF -> DBCTX; EF -> LINQ; EF -> SQLITE; EF -> WINFORMS;
+    }
+
+    // === Связи между кластерами ===
+    ARCH -> SOLID [label="опирается на"];
+    ARCH -> DRY;
+    ARCH -> KISS;
+    ARCH -> YAGNI;
+    ARCH -> DI    [label="реализуется через"];
+    ARCH -> STRATEGY [label="паттерн"];
+    ARCH -> TEST  [label="проверяется через"];
+    ARCH -> REFACTOR [label="улучшается через"];
+    ARCH -> EF    [label="хранение данных"];
+
+    DIP -> DI     [label="основа для"];
+    DI -> TEST    [label="обеспечивает\nтестируемость"];
+    STRATEGY -> OCP [label="реализует"];
+    STRATEGY -> DIP [label="требует"];
+    TDD -> XUNIT  [label="использует"];
+    TDD -> MOQ;
+    REFACTOR -> SRP [label="улучшает"];
+    REFACTOR -> DRY [label="улучшает"];
+    EF -> LINQ;
+}

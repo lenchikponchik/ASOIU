@@ -1,0 +1,15 @@
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\bin\Debug\net8.0\sem6.exe
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\bin\Debug\net8.0\sem6.deps.json
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\bin\Debug\net8.0\sem6.runtimeconfig.json
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\bin\Debug\net8.0\sem6.dll
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\bin\Debug\net8.0\sem6.pdb
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.AssemblyInfoInputs.cache
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.AssemblyInfo.cs
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.csproj.CoreCompileInputs.cache
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.sourcelink.json
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.dll
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\refint\sem6.dll
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.pdb
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\sem6.genruntimeconfig.cache
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem6\obj\Debug\net8.0\ref\sem6.dll

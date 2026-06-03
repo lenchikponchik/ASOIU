@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/ДЗ1/">
+    <Project Path="ДЗ1/EditDistance.csproj" />
+  </Folder>
+  <Folder Name="/ДЗ2/">
+    <Project Path="ДЗ2/Dz2.csproj" />
+  </Folder>
+  <Project Path="sem1/sem1.csproj" />
+  <Project Path="sem2/sem2.csproj" />
+  <Project Path="sem3/sem3.csproj" />
+  <Project Path="sem4/sem4.csproj" />
+  <Project Path="sem5/sem5.csproj" />
+  <Project Path="sem6/sem6.csproj" />
+  <Project Path="sem7.Tests/sem7.Tests.csproj" />
+  <Project Path="sem7/sem7.csproj" />
+  <Project Path="ДЗ3/ДЗ3.csproj" />
+</Solution>

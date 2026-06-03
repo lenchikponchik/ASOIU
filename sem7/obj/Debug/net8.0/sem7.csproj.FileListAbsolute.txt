@@ -1,0 +1,15 @@
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\bin\Debug\net8.0\sem7.exe
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\bin\Debug\net8.0\sem7.deps.json
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\bin\Debug\net8.0\sem7.runtimeconfig.json
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\bin\Debug\net8.0\sem7.dll
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\bin\Debug\net8.0\sem7.pdb
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.AssemblyInfoInputs.cache
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.AssemblyInfo.cs
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.csproj.CoreCompileInputs.cache
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.sourcelink.json
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.dll
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\refint\sem7.dll
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.pdb
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\sem7.genruntimeconfig.cache
+C:\Users\leosp\Desktop\АСОИУ\ASOIU\sem7\obj\Debug\net8.0\ref\sem7.dll
