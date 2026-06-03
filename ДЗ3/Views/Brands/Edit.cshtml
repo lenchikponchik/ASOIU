@@ -1,0 +1,22 @@
+@model CarBrand
+@{ ViewData["Title"] = "Изменить марку"; }
+
+<h2>Изменить марку</h2>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" class="row g-3" style="max-width:400px">
+    <div class="col-12">
+        <label class="form-label">Название</label>
+        <input name="name" value="@Model.Name" class="form-control" required />
+        @if (!ViewData.ModelState.IsValid)
+        {
+            foreach (var e in ViewData.ModelState["name"]?.Errors ?? [])
+            {
+                <div class="text-danger small">@e.ErrorMessage</div>
+            }
+        }
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Отмена</a>
+    </div>
+</form>

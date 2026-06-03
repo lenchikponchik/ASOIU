@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "Отчёты";
+    var allCars    = (List<CarRow>)   ViewBag.AllCars;
+    var countBrand = (List<CountRow>) ViewBag.CountBrand;
+    var avgBrand   = (List<AvgRow>)   ViewBag.AvgBrand;
+}
+
+<h2>Отчёты</h2>
+
+<ul class="nav nav-tabs mb-3" id="reportTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab1">Все автомобили</a></li>
+    <li class="nav-item"><a class="nav-link"        data-bs-toggle="tab" href="#tab2">Авто по маркам</a></li>
+    <li class="nav-item"><a class="nav-link"        data-bs-toggle="tab" href="#tab3">Средняя мощность</a></li>
+</ul>
+
+<div class="tab-content">
+
+    <!-- §1: полный список -->
+    <div class="tab-pane fade show active" id="tab1">
+        <table class="table table-bordered table-sm">
+            <thead class="table-dark"><tr><th>Марка</th><th>Модель</th><th>Мощность (л.с.)</th></tr></thead>
+            <tbody>
+            @foreach (var r in allCars)
+            {
+                <tr><td>@r.Brand</td><td>@r.Name</td><td>@r.Horsepower</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- §2: количество по маркам -->
+    <div class="tab-pane fade" id="tab2">
+        <table class="table table-bordered table-sm" style="max-width:360px">
+            <thead class="table-dark"><tr><th>Марка</th><th>Количество</th></tr></thead>
+            <tbody>
+            @foreach (var r in countBrand)
+            {
+                <tr><td>@r.Brand</td><td>@r.Count</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- §3: средняя мощность -->
+    <div class="tab-pane fade" id="tab3">
+        <table class="table table-bordered table-sm" style="max-width:360px">
+            <thead class="table-dark"><tr><th>Марка</th><th>Средняя мощность (л.с.)</th></tr></thead>
+            <tbody>
+            @foreach (var r in avgBrand)
+            {
+                <tr><td>@r.Brand</td><td>@r.AvgHp</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+</div>

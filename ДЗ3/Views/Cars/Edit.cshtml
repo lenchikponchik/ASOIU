@@ -1,0 +1,38 @@
+@model Car
+@{ ViewData["Title"] = "Изменить автомобиль"; }
+
+<h2>Изменить автомобиль</h2>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" class="row g-3" style="max-width:420px">
+    <input type="hidden" asp-for="Id" />
+    <div class="col-12">
+        <label class="form-label">Марка</label>
+        <select name="BrandId" class="form-select" required>
+            @foreach (SelectListItem item in (IEnumerable<SelectListItem>)ViewBag.Brands)
+            {
+                if (item.Value == Model.BrandId.ToString())
+                {
+                    <option value="@item.Value" selected>@item.Text</option>
+                }
+                else
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Модель</label>
+        <input asp-for="Name" class="form-control" required />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+    <div class="col-12">
+        <label class="form-label">Мощность (л.с.)</label>
+        <input asp-for="Horsepower" type="number" min="0" class="form-control" required />
+        <span asp-validation-for="Horsepower" class="text-danger small"></span>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Отмена</a>
+    </div>
+</form>

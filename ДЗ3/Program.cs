@@ -1,10 +1,20 @@
 using ДЗ3.Data;
-using ДЗ3.Forms;
+using Microsoft.EntityFrameworkCore;
 
-Application.EnableVisualStyles();
-Application.SetCompatibleTextRenderingDefault(false);
+var builder = WebApplication.CreateBuilder(args);
 
-using var db = new AppDbContext();
-DbSeeder.Seed(db);
+builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlite("Data Source=cars_ef.db"));
 
-Application.Run(new MainForm());
+var app = builder.Build();
+
+// Создать схему и заполнить начальными данными при старте
+using (var scope = app.Services.CreateScope())
+    DbSeeder.Seed(scope.ServiceProvider.GetRequiredService<AppDbContext>());
+
+app.UseStaticFiles();
+app.UseRouting();
+app.MapControllerRoute("default", "{controller=Brands}/{action=Index}/{id?}");
+
+app.Run();

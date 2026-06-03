@@ -4,13 +4,10 @@ using ДЗ3.Models;
 namespace ДЗ3.Data;
 
 /// <summary>Контекст EF Core для БД автомобилей (Code First, SQLite).</summary>
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<CarBrand> CarBrands => Set<CarBrand>();
     public DbSet<Car>      Cars      => Set<Car>();
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
-        options.UseSqlite("Data Source=cars_ef.db");
 
     protected override void OnModelCreating(ModelBuilder model)
     {

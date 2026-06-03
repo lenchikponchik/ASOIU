@@ -1,0 +1,45 @@
+@model List<BrandRow>
+@{ ViewData["Title"] = "Марки автомобилей"; }
+
+<h2>Марки автомобилей</h2>
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<!-- Форма добавления -->
+<form method="post" asp-action="Create" class="row g-2 mb-4">
+    <div class="col-auto">
+        <input name="name" class="form-control" placeholder="Название новой марки" required />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-hover table-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Марка</th>
+            <th>Автомобилей</th>
+            <th style="width:160px"></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var b in Model)
+    {
+        <tr>
+            <td>@b.Name</td>
+            <td>@b.CarCount</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@b.Id" class="btn btn-sm btn-outline-secondary">Изменить</a>
+                <form method="post" asp-action="Delete" asp-route-id="@b.Id" class="d-inline"
+                      onsubmit="return confirm('Удалить марку «@b.Name»?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
